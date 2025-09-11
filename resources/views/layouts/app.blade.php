@@ -14,6 +14,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+
+    @if (session('status'))
+    <div class="mx-6 mt-4 bg-green-50 text-green-800 border border-green-200 rounded-lg px-4 py-3">
+        {{ session('status') }}
+    </div>
+@endif
+
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')

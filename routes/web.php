@@ -25,10 +25,10 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/deals/{deal}/stage', [DealController::class, 'updateStage'])->name('deals.updateStage');
 
     // Companies (Index + Detail)
-    Route::resource('companies', CompanyController::class)->only(['index', 'show']);
+    Route::resource('companies', CompanyController::class);
 
     // Contacts (Index + Detail)
-    Route::resource('contacts', ContactController::class)->only(['index', 'show']);
+    Route::resource('contacts', ContactController::class);
 });
 
 require __DIR__.'/auth.php';
