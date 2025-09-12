@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
     // Deals (Kanban-Board + Stage-Update)
     Route::get('/deals', [DealController::class, 'index'])->name('deals.index');
     Route::patch('/deals/{deal}/stage', [DealController::class, 'updateStage'])->name('deals.updateStage');
+    Route::post('/deals/reorder', [DealController::class, 'reorder'])->name('deals.reorder');
 
     // Companies (Index + Detail)
     Route::resource('companies', CompanyController::class);

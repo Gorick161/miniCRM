@@ -22,6 +22,7 @@ class DealController extends Controller
         $stages = Stage::with(['deals' => function ($q) {
             $q->with('company')->orderBy('updated_at', 'desc');
         }])
+        ->with(['deals' => fn($q) => $q->with('company')->orderBy('position')])
         ->where('pipeline_id', $pipeline->id ?? null)
         ->orderBy('position')
         ->get();
@@ -39,4 +40,22 @@ class DealController extends Controller
 
         return back()->with('status', 'Deal erfolgreich verschoben');
     }
+
+    public function reorder(Request $request)
+{
+    $data = $request->validate([
+        'stage_id'  => ['required','exists:stages,id'],
+        'deal_ids'  => ['required','array'],
+        'deal_ids.*'=> ['integer','exists:deals,id'],
+    ]);
+
+    foreach ($data['deal_ids'] as $i => $id) {
+        Deal::where('id', $id)->update([
+            'stage_id' => $data['stage_id'],
+            'position' => $i,
+        ]);
+    }
+
+    return response()->json(['ok' => true]);
+}
 }
