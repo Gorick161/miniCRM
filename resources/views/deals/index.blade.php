@@ -1,3 +1,12 @@
+<x-slot name="header">
+    <h2 class="text-xl font-semibold">Deals {{ $pipeline ? '– '.$pipeline->name : '' }}</h2>
+</x-slot>
+
+@if(!$pipeline)
+  <x-card class="mb-4">
+    <div class="muted">Noch keine Pipeline angelegt. Lege eine Pipeline und Stages im Seeder an.</div>
+  </x-card>
+@endif
 <x-app-layout>
   <x-slot name="header">
     <h2 class="text-xl font-semibold">Deals</h2>

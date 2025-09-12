@@ -4,31 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Pipeline;
 use App\Models\Stage;
+use Illuminate\Support\Collection;
 use App\Models\Deal;
 use Illuminate\Http\Request;
 
 class DealController extends Controller
 {
     public function index()
-    {
-        // Lade Pipelines + Stages + Deals
-        $pipelines = Pipeline::with(['stages' => function ($q) {
-            $q->orderBy('position');
-        }])->get();
+{
+    
+    $pipelineId = Pipeline::orderBy('id')->value('id');
 
-        // Für Demo: wir nehmen die erste Pipeline
-        $pipeline = $pipelines->first();
+    
+    $pipeline = $pipelineId ? Pipeline::with('stages')->find($pipelineId) : null;
 
-        $stages = Stage::with(['deals' => function ($q) {
-            $q->with('company')->orderBy('updated_at', 'desc');
-        }])
-        ->with(['deals' => fn($q) => $q->with('company')->orderBy('position')])
-        ->where('pipeline_id', $pipeline->id ?? null)
-        ->orderBy('position')
-        ->get();
+    
+    $stages = $pipelineId
+        ? Stage::where('pipeline_id', $pipelineId)
+            ->with(['deals' => fn($q) => $q->with('company')->orderBy('position')])
+            ->orderBy('position')
+            ->get()
+        : collect();
 
-        return view('deals.index', compact('pipeline', 'stages'));
-    }
+    return view('deals.index', compact('pipeline', 'stages'));
+}
 
     public function updateStage(Deal $deal, Request $request)
     {
