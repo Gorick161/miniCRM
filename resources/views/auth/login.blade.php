@@ -1,47 +1,84 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="auth-challenge">
+        <div class="container" id="container">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+            {{-- SIGN UP --}}
+            <div class="form-container sign-up-container">
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+                    <h1>Create account</h1>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    <span>Use your email for registration</span>
+
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Name" required />
+                    @error('name')<small class="err">{{ $message }}</small>@enderror
+
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required />
+                    @error('email')<small class="err">{{ $message }}</small>@enderror
+
+                    <input type="password" name="password" placeholder="Password" required />
+                    @error('password')<small class="err">{{ $message }}</small>@enderror
+
+                    <input type="password" name="password_confirmation" placeholder="Confirm password" required />
+
+                    <button type="submit">Sign up</button>
+                </form>
+            </div>
+
+            {{-- SIGN IN --}}
+            <div class="form-container sign-in-container">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    <h1>Sign in</h1>
+
+                    <span>Use your account</span>
+
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus />
+                    @error('email')<small class="err">{{ $message }}</small>@enderror
+
+                    <input type="password" name="password" placeholder="Password" required />
+                    @error('password')<small class="err">{{ $message }}</small>@enderror
+
+                    <div class="row">
+                        <label class="remember">
+                            <input type="checkbox" name="remember">
+                            Keep me signed in
+                        </label>
+
+                        @if (Route::has('password.request'))
+                            <a class="link" href="{{ route('password.request') }}">Forgot password?</a>
+                        @endif
+                    </div>
+
+                    <button type="submit">Sign in</button>
+                </form>
+            </div>
+
+            {{-- OVERLAY --}}
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Welcome back!</h1>
+                        <p>To keep connected, please sign in with your personal info.</p>
+                        <button class="ghost" id="signIn" type="button">Sign in</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Hello, friend!</h1>
+                        <p>Enter your details and start your journey with us.</p>
+                        <button class="ghost" id="signUp" type="button">Sign up</button>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    {{-- Toggle --}}
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
+        signUpButton?.addEventListener('click', () => container.classList.add('right-panel-active'));
+        signInButton?.addEventListener('click', () => container.classList.remove('right-panel-active'));
+    </script>
 </x-guest-layout>
