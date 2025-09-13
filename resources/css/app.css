@@ -278,3 +278,40 @@ button:hover {
 button:active {
   transform: translateY(1px);
 }
+
+/* =========================================
+   Animations & Effects
+========================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animated underline for navigation links */
+.nav-underline {
+  position: relative;
+}
+
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s ease;
+}
+
+.nav-underline:hover::after,
+.nav-underline-active::after {
+  transform: scaleX(1);
+}
