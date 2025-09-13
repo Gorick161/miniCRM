@@ -23,6 +23,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Deals
     Route::get('/deals', [DealController::class, 'index'])->name('deals.index');
+    Route::post('/deals', [DealController::class, 'store'])->name('deals.store');   // <= hier!
+
     Route::patch('/deals/{deal}/stage', [DealController::class, 'updateStage'])->name('deals.updateStage');
     Route::post('/deals/reorder', [DealController::class, 'reorder'])->name('deals.reorder');
 

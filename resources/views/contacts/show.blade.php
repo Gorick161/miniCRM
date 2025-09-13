@@ -1,18 +1,55 @@
-<x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl">{{ $contact->full_name }}</h2></x-slot>
+{{-- resources/views/contacts/show.blade.php --}}
+@extends('layouts.app_pro')
 
-    <div class="p-6 space-y-6">
-        <div class="bg-white rounded-xl shadow p-4 grid md:grid-cols-3 gap-4">
-            <div><div class="text-sm text-gray-500">E-Mail</div><div>{{ $contact->email ?? '—' }}</div></div>
-            <div><div class="text-sm text-gray-500">Telefon</div><div>{{ $contact->phone ?? '—' }}</div></div>
-            <div>
-                <div class="text-sm text-gray-500">Company</div>
-                <div>
-                    @if($contact->company)
-                        <a class="text-blue-600 hover:underline" href="{{ route('companies.show',$contact->company) }}">{{ $contact->company->name }}</a>
-                    @else — @endif
-                </div>
-            </div>
-        </div>
+@section('content')
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold">
+        {{ $contact->first_name }} {{ $contact->last_name }}
+      </h1>
+      @if($contact->title)
+        <p class="muted">{{ $contact->title }}</p>
+      @endif
     </div>
-</x-app-layout>
+
+    <div class="flex items-center gap-2">
+      <a href="{{ route('contacts.index') }}" class="btn-outline">Back</a>
+      {{-- Optional: Edit/Delete später --}}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <section class="panel p-6">
+      <h3 class="font-semibold mb-3">Contact info</h3>
+      <dl class="space-y-2 text-sm">
+        <div class="flex justify-between border-b border-forest-800/50 pb-2">
+          <dt class="muted">Email</dt>
+          <dd>
+            @if($contact->email)
+              <a class="hover:underline" href="mailto:{{ $contact->email }}">{{ $contact->email }}</a>
+            @else — @endif
+          </dd>
+        </div>
+        <div class="flex justify-between border-b border-forest-800/50 pb-2">
+          <dt class="muted">Phone</dt>
+          <dd>{{ $contact->phone ?: '—' }}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="muted">Company</dt>
+          <dd>
+            @if($contact->company)
+              <a class="hover:underline" href="{{ route('companies.show',$contact->company_id) }}">
+                {{ $contact->company->name }}
+              </a>
+            @else — @endif
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel p-6">
+      <h3 class="font-semibold mb-3">Activity (coming soon)</h3>
+      <p class="muted">Hook tasks, notes and emails here later.</p>
+    </section>
+  </div>
+@endsection

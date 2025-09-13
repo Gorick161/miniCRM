@@ -1,138 +1,280 @@
+/* =========================================
+   Tailwind layers
+========================================= */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Design Tokens als CSS-Variablen ===== */
+/* =========================================
+   Design tokens (CSS variables)
+   - Light defaults auf :root
+   - Dark overrides auf .dark
+========================================= */
 :root {
+  /* Surface / Background */
+  --bg: #f8fafc;
+  /* page bg (light) */
+  --panel: #ffffff;
+  /* cards/panels (light) */
+  --panel-border: #e5e7eb;
+  /* slate-200 */
+  --panel-shadow: 0 10px 25px rgba(2, 8, 23, .10), 0 2px 8px rgba(2, 8, 23, .06);
+
+  /* Text */
+  --ink: #0f172a;
+  /* slate-900 */
+  --ink-muted: #64748b;
+  /* slate-500 */
+
+  /* Brand (Forest palette) */
+  --brand-500: #5C8374;
+  --brand-600: #4d6e62;
+  --brand-700: #3f5b51;
+
+  /* Accents for borders & focus in light mode */
+  --line: #cbd5e1;
+  /* slate-300 */
+}
+
+html.dark {
   --bg: #040D12;
+  /* forest-950 */
   --panel: #183D3D;
-  --primary: #5C8374;
-  --muted: #93B1A6;
-  --ink: #0f172a;      /* Text auf weißen Inputs */
+  /* forest-800-ish */
+  --panel-border: #0f2a2a;
+  /* subtle dark border */
+  --panel-shadow: 0 14px 30px rgba(0, 0, 0, .35), 0 2px 10px rgba(0, 0, 0, .25);
+
+  --ink: #e5e7eb;
+  /* slate-200 */
+  --ink-muted: rgba(255, 255, 255, .65);
+
+  --brand-500: #5C8374;
+  /* bleibt gleich */
+  --brand-600: #6b9a89;
+  --brand-700: #7fb2a0;
+
+  --line: #294a4a;
 }
 
-/* Seitenhintergrund & Standardtext */
-html, body {
-  background-color: var(--bg);
-}
+/* First paint background to avoid white flash */
+html,
 body {
-  color: #fff; /* Standard hell – gute Lesbarkeit auf dunklem BG */
+  background: var(--bg);
 }
 
-/* ===== Einheitliche Form Controls (weiß) =====
-   Nutze die opt-in Klassen aus @tailwindcss/forms (form-input, form-select, form-textarea, form-checkbox, form-radio)
-*/
-@layer components {
-  .ui-field { @apply w-full max-w-full; }
-
-  .ui-input, .form-input {
-    @apply w-full rounded-xl border px-3 py-2.5 text-sm;
-    background-color: #fff;            /* weiß */
+/* =========================================
+   Base tweaks (typography, links, selection)
+========================================= */
+@layer base {
+  body {
+    @apply antialiased;
     color: var(--ink);
-    border-color: var(--muted);
-    transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
-  }
-  .ui-input::placeholder { color: #93B1A6; opacity: 1; }
-
-  .ui-input:focus, .form-input:focus {
-    @apply outline-none ring-2;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
-    --tw-ring-color: color-mix(in oklab, var(--primary) 45%, transparent);
+    background: var(--bg);
+    font-feature-settings: "kern", "liga", "calt";
   }
 
-  .ui-select, .form-select {
-    @apply w-full rounded-xl border px-3 py-2.5 text-sm bg-white;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--ink);
-    border-color: var(--muted);
-  }
-  .ui-textarea, .form-textarea {
-    @apply w-full rounded-xl border px-3 py-2.5 text-sm bg-white;
-    color: var(--ink);
-    border-color: var(--muted);
   }
 
-  .ui-checkbox, .form-checkbox {
-    @apply rounded border;
-    border-color: var(--muted);
-    accent-color: var(--primary);
+  a {
+    color: var(--brand-600);
   }
-  .ui-radio, .form-radio { accent-color: var(--primary); }
+
+  a:hover {
+    color: var(--brand-700);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--brand-600) 30%, transparent);
+    color: #fff;
+  }
 }
 
-/* ===== Standard-UI für Karten/Panels/Buttons ===== */
+/* =========================================
+   Components
+========================================= */
 @layer components {
+
+  /* --- Panels / Cards --- */
   .panel {
-    @apply rounded-xl shadow-panel;
-    background-color: var(--panel);
-    border: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--panel-border);
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: var(--panel-shadow);
   }
+
+  /* kleine Helfer-Variante: „flaches“ Panel (z.B. Stage-Header) */
+  .panel-flat {
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--panel-border);
+    border-radius: 0.75rem;
+  }
+
+  /* --- Buttons --- */
   .btn {
-    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition;
-    background-color: var(--primary);
-    color: #0b1412;
-    border: 1px solid var(--primary);
+    @apply inline-flex items-center justify-center gap-2 font-medium;
+    padding: .55rem .9rem;
+    border-radius: .625rem;
+    color: #fff;
+    background: var(--brand-600);
+    border: 1px solid var(--brand-600);
+    transition: transform .08s ease, background-color .18s ease, box-shadow .18s ease;
+    box-shadow: 0 2px 8px rgba(2, 8, 23, .12);
   }
+
   .btn:hover {
-    background-color: color-mix(in oklab, var(--primary) 70%, #ffffff 0%);
+    background: var(--brand-500);
   }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition;
-    color: var(--muted);
-    border: 1px solid var(--muted);
+    @apply inline-flex items-center justify-center gap-2 font-medium;
+    padding: .55rem .9rem;
+    border-radius: .625rem;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    transition: background-color .18s ease, color .18s ease, border-color .18s ease;
   }
+
   .btn-outline:hover {
-    color: #fff; border-color: #fff;
-    background-color: color-mix(in oklab, var(--panel) 80%, transparent);
+    background: color-mix(in srgb, var(--brand-600) 12%, transparent);
+    color: var(--ink);
+    border-color: color-mix(in srgb, var(--brand-600) 50%, var(--line));
   }
-  .muted { color: var(--muted); }
+
+  /* --- Inputs / Selects / Textareas --- */
+  .ui-input,
+  .ui-select,
+  .ui-textarea {
+    width: 100%;
+    border-radius: .75rem;
+    border: 1px solid var(--line);
+    background: #fff;
+    /* IMMER weiß im Light Mode */
+    color: #0f172a;
+    padding: .6rem .9rem;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+  }
+
+  /* Dark-Mode: Felder ebenfalls dunkel, aber weiterhin kontrastreich */
+  html.dark .ui-input,
+  html.dark .ui-select,
+  html.dark .ui-textarea {
+    background: #0f1b1b;
+    color: var(--ink);
+    border-color: var(--panel-border);
+  }
+
+  .ui-input::placeholder,
+  .ui-textarea::placeholder {
+    color: #94a3b8;
+    /* slate-400 */
+  }
+
+  .ui-input:focus,
+  .ui-select:focus,
+  .ui-textarea:focus {
+    outline: none;
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-600) 35%, transparent);
+  }
+
+  /* --- Muted text --- */
+  .muted {
+    color: var(--ink-muted);
+  }
+
+  /* --- Shadow helper (falls du es direkt nutzen willst) --- */
+  .shadow-panel {
+    box-shadow: var(--panel-shadow);
+  }
+
+  /* --- „Lift on hover“ für Deal-Karten --- */
+  .lift-on-hover {
+    will-change: transform;
+    transition: transform .18s ease, box-shadow .2s ease, background-color .2s ease;
+  }
+
+  .lift-on-hover:hover {
+    transform: translateY(-2px) scale(1.015);
+    box-shadow: 0 14px 28px rgba(2, 8, 23, .18);
+    background: color-mix(in srgb, var(--panel) 90%, var(--brand-600) 10%);
+  }
 }
 
-/* Global input style */
+/* =========================================
+   Global form fallback (nur wenn kein .ui-* gesetzt)
+   – hält Third-party Markup stabil
+========================================= */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="number"],
-textarea,
-select {
-    background-color: #ffffff; /* consistent pure white */
-    border: 1px solid #93B1A6; /* soft forest grey-green border */
-    border-radius: 0.5rem; /* rounded corners */
-    padding: 0.75rem 1rem;
-    width: 100%;
-    color: #040D12; /* dark text */
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+input[type="search"],
+select,
+textarea {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  padding: .6rem .9rem;
+  width: 100%;
+  font-size: .95rem;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
 
-/* On focus */
+html.dark input[type="text"],
+html.dark input[type="email"],
+html.dark input[type="password"],
+html.dark input[type="number"],
+html.dark input[type="search"],
+html.dark select,
+html.dark textarea {
+  background: #0f1b1b;
+  color: var(--ink);
+  border-color: var(--panel-border);
+}
+
 input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: #5C8374; /* accent forest green */
-    box-shadow: 0 0 0 3px rgba(92, 131, 116, 0.3);
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--brand-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-600) 35%, transparent);
 }
 
-/* Btn styles */
-button,
-.btn {
-    background-color: #183D3D;
-    color: #ffffff;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+/* =========================================
+   Buttons (fallback für nacktes <button>)
+========================================= */
+button {
+  background: var(--brand-600);
+  color: #fff;
+  border: 1px solid var(--brand-600);
+  border-radius: .625rem;
+  padding: .55rem .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .18s ease, transform .08s ease;
 }
 
-button:hover,
-.btn:hover {
-    background-color: #5C8374;
+button:hover {
+  background: var(--brand-500);
 }
 
-button:active,
-.btn:active {
-    transform: scale(0.97);
+button:active {
+  transform: translateY(1px);
 }

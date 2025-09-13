@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Contact extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'company_id', 'first_name', 'last_name', 'email', 'phone', 'position', 'notes',
-    ];
+    protected $fillable = ['first_name', 'last_name', 'email', 'phone', 'company_id', 'title'];
 
     protected $appends = ['full_name'];
 
