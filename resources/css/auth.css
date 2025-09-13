@@ -102,13 +102,19 @@
 }
 
 .auth-challenge input {
-    background-color: #93B1A6;
+    background-color: #ffffff;
     border: none;
     padding: 12px 15px;
     margin: 8px 0;
     width: 100%;
     border-radius: 8px;
     color: #040D12;
+}
+
+.auth-challenge input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(92,131,116,.35);
+  border-color: #5C8374;
 }
 
 .auth-challenge input::placeholder {

@@ -2,20 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html { @apply antialiased; }
-  body { @apply bg-ink-50 text-ink-800 dark:bg-ink-900 dark:text-ink-100; }
-  h1,h2,h3 { @apply tracking-tight; }
+/* ===== Design Tokens als CSS-Variablen ===== */
+:root {
+  --bg: #040D12;
+  --panel: #183D3D;
+  --primary: #5C8374;
+  --muted: #93B1A6;
+  --ink: #0f172a;      /* Text auf weißen Inputs */
 }
 
+/* Seitenhintergrund & Standardtext */
+html, body {
+  background-color: var(--bg);
+}
+body {
+  color: #fff; /* Standard hell – gute Lesbarkeit auf dunklem BG */
+}
+
+/* ===== Einheitliche Form Controls (weiß) =====
+   Nutze die opt-in Klassen aus @tailwindcss/forms (form-input, form-select, form-textarea, form-checkbox, form-radio)
+*/
 @layer components {
-  .container-app {@apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;}
-  .card        {@apply bg-white dark:bg-ink-800 rounded-2xl shadow-card hover:shadow-cardHover transition-shadow;}
-  .card-p      {@apply p-5 sm:p-6;}
-  .section     {@apply card card-p;}
-  .muted       {@apply text-ink-500 dark:text-ink-400;}
+  .ui-field { @apply w-full max-w-full; }
+
+  .ui-input, .form-input {
+    @apply w-full rounded-xl border px-3 py-2.5 text-sm;
+    background-color: #fff;            /* weiß */
+    color: var(--ink);
+    border-color: var(--muted);
+    transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
+  }
+  .ui-input::placeholder { color: #93B1A6; opacity: 1; }
+
+  .ui-input:focus, .form-input:focus {
+    @apply outline-none ring-2;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
+    --tw-ring-color: color-mix(in oklab, var(--primary) 45%, transparent);
+  }
+
+  .ui-select, .form-select {
+    @apply w-full rounded-xl border px-3 py-2.5 text-sm bg-white;
+    color: var(--ink);
+    border-color: var(--muted);
+  }
+  .ui-textarea, .form-textarea {
+    @apply w-full rounded-xl border px-3 py-2.5 text-sm bg-white;
+    color: var(--ink);
+    border-color: var(--muted);
+  }
+
+  .ui-checkbox, .form-checkbox {
+    @apply rounded border;
+    border-color: var(--muted);
+    accent-color: var(--primary);
+  }
+  .ui-radio, .form-radio { accent-color: var(--primary); }
 }
 
-@layer utilities {
-  .focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-brand-500/70 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-ink-900; }
+/* ===== Standard-UI für Karten/Panels/Buttons ===== */
+@layer components {
+  .panel {
+    @apply rounded-xl shadow-panel;
+    background-color: var(--panel);
+    border: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition;
+    background-color: var(--primary);
+    color: #0b1412;
+    border: 1px solid var(--primary);
+  }
+  .btn:hover {
+    background-color: color-mix(in oklab, var(--primary) 70%, #ffffff 0%);
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition;
+    color: var(--muted);
+    border: 1px solid var(--muted);
+  }
+  .btn-outline:hover {
+    color: #fff; border-color: #fff;
+    background-color: color-mix(in oklab, var(--panel) 80%, transparent);
+  }
+  .muted { color: var(--muted); }
+}
+
+/* Global input style */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    background-color: #ffffff; /* consistent pure white */
+    border: 1px solid #93B1A6; /* soft forest grey-green border */
+    border-radius: 0.5rem; /* rounded corners */
+    padding: 0.75rem 1rem;
+    width: 100%;
+    color: #040D12; /* dark text */
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* On focus */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #5C8374; /* accent forest green */
+    box-shadow: 0 0 0 3px rgba(92, 131, 116, 0.3);
+}
+
+/* Btn styles */
+button,
+.btn {
+    background-color: #183D3D;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover,
+.btn:hover {
+    background-color: #5C8374;
+}
+
+button:active,
+.btn:active {
+    transform: scale(0.97);
 }

@@ -2,45 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Company, Contact, Deal, Pipeline, Stage, Activity};
-use Illuminate\Support\Facades\DB;
+use App\Models\Company;
+use App\Models\Contact;
+use App\Models\Deal;
+use App\Models\Pipeline;
+use App\Models\Stage;
 
 class DashboardController extends Controller
 {
+    // Keep the logic here, keep the view slim.
     public function index()
     {
-        // KPIs
+        // Find "Won" stages (robust even if you add multiple pipelines)
+        $wonStageIds = Stage::where('name', 'Won')->pluck('id');
+
         $stats = [
             'companies'   => Company::count(),
             'contacts'    => Contact::count(),
-            'deals_open'  => Deal::where('status', 'open')->count(),
-            'deals_won'   => Deal::where('status', 'won')->count(),
-            'deals_lost'  => Deal::where('status', 'lost')->count(),
-            'value_open'  => Deal::where('status', 'open')->sum('value_cents'),
-            'value_won'   => Deal::where('status', 'won')->sum('value_cents'),
+            'deals_open'  => Deal::whereNotIn('stage_id', $wonStageIds)->count(),
+            'deals_won'   => Deal::whereIn('stage_id', $wonStageIds)->count(),
+            'value_open'  => Deal::whereNotIn('stage_id', $wonStageIds)->sum('value_cents'),
+            'value_won'   => Deal::whereIn('stage_id', $wonStageIds)->sum('value_cents'),
         ];
 
-        // Erste Pipeline + Stages mit Deal-Zahlen
-        $pipeline = Pipeline::with('stages')->first();
-        $stages = collect();
-        if ($pipeline) {
-            $stages = Stage::where('pipeline_id', $pipeline->id)
-                ->orderBy('position')
-                ->withCount('deals')
-                ->get();
-        }
+        // Pick first pipeline as default (adjust if you have a current-user pipeline)
+        $pipeline = Pipeline::first();
 
-        // Letzte Deals & Aktivitäten
-        $recentDeals = Deal::with(['company','stage'])
-            ->latest('updated_at')
-            ->limit(8)
-            ->get();
+        $stages = $pipeline
+            ? Stage::where('pipeline_id', $pipeline->id)
+            ->withCount('deals')
+            ->orderBy('position')
+            ->get()
+            : collect();
 
-        $recentActivities = Activity::with('user')
-            ->latest('happened_at')
-            ->limit(8)
-            ->get();
-
-        return view('dashboard.index', compact('stats','pipeline','stages','recentDeals','recentActivities'));
+        return view('dashboard', compact('stats', 'pipeline', 'stages'));
     }
 }

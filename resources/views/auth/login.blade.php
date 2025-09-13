@@ -20,7 +20,7 @@
                     @error('password')<small class="err">{{ $message }}</small>@enderror
 
                     <input type="password" name="password_confirmation" placeholder="Confirm password" required />
-
+                    <br>
                     <button type="submit">Sign up</button>
                 </form>
             </div>
@@ -29,7 +29,7 @@
             <div class="form-container sign-in-container">
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-                    <h1>Sign in</h1>
+                    <h1>Login</h1>
 
                     <span>Use your account</span>
 
@@ -49,8 +49,8 @@
                             <a class="link" href="{{ route('password.request') }}">Forgot password?</a>
                         @endif
                     </div>
-
-                    <button type="submit">Sign in</button>
+                    <br>
+                    <button type="submit">login</button>
                 </form>
             </div>
 
@@ -64,7 +64,7 @@
                     </div>
                     <div class="overlay-panel overlay-right">
                         <h1>Hello, friend!</h1>
-                        <p>Enter your details and start your journey with us.</p>
+                        <p>New here? Then Sign up!</p>
                         <button class="ghost" id="signUp" type="button">Sign up</button>
                     </div>
                 </div>

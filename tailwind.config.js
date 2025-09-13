@@ -1,50 +1,32 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
-
-/** @type {import('tailwindcss').Config} */
-export default {
+// tailwind.config.js
+module.exports = {
   content: [
-    './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-    './storage/framework/views/*.php',
-    './resources/views/**/*.blade.php',
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
   ],
-  darkMode: 'class',
+  darkMode: "class",
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
-      },
       colors: {
-        brand: {
-          50:  '#eef8ff',
-          100: '#d9efff',
-          200: '#b6e0ff',
-          300: '#84caff',
-          400: '#52b2fe',
-          500: '#2a99f0',   // Primary
-          600: '#1f7ed0',
-          700: '#1a68aa',
-          800: '#185788',
-          900: '#153e60',
-        },
-        ink: {
-          50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',
-          400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',
-          800:'#1f2937',900:'#0f172a'
+        forest: {
+          950: "#040D12", // Page BG
+          900: "#0A1919",
+          800: "#183D3D", // Panel / Header
+          600: "#2F5E59",
+          500: "#5C8374", // Primary
+          300: "#93B1A6", // Muted / borders
         },
       },
       boxShadow: {
-        card: '0 2px 8px rgba(15, 23, 42, 0.06)',
-        cardHover: '0 8px 24px rgba(15, 23, 42, 0.09)',
+        panel: "0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)",
       },
       borderRadius: {
-        xl: '0.9rem',
-        '2xl': '1.25rem',
-      },
-      spacing: {
-        '18': '4.5rem',
+        xl: "12px",
       },
     },
   },
-  plugins: [forms],
-};
+  plugins: [
+    require('@tailwindcss/forms')({ strategy: 'class' }), // opt-in Klassen
+  ],
+}

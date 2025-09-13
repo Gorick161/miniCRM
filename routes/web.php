@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DealController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\DashboardController; // <— NEU
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,18 +18,18 @@ Route::redirect('/', '/dashboard');
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware(['auth', 'verified'])
         ->name('dashboard');
 
-    // Deals (Kanban-Board + Stage-Update)
+    // Deals
     Route::get('/deals', [DealController::class, 'index'])->name('deals.index');
     Route::patch('/deals/{deal}/stage', [DealController::class, 'updateStage'])->name('deals.updateStage');
     Route::post('/deals/reorder', [DealController::class, 'reorder'])->name('deals.reorder');
 
-    // Companies (Index + Detail)
+    // Companies
     Route::resource('companies', CompanyController::class);
 
-    // Contacts (Index + Detail)
+    // Contacts
     Route::resource('contacts', ContactController::class);
 });
-
 require __DIR__.'/auth.php';
