@@ -170,7 +170,7 @@ body {
     transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
   }
 
-  /* Dark-Mode: Felder ebenfalls dunkel, aber weiterhin kontrastreich */
+  /* Dark-Mode */
   html.dark .ui-input,
   html.dark .ui-select,
   html.dark .ui-textarea {
@@ -277,4 +277,42 @@ button:hover {
 
 button:active {
   transform: translateY(1px);
+}
+
+@layer utilities {
+
+  .sidebar-shell {
+    /* already has w-64 per markup */
+  }
+
+  .main-shell {
+    /* already has lg:pl-64 per markup */
+  }
+
+  html.sidebar-collapsed .sidebar-shell {
+    width: 4rem
+      /* ~w-16 */
+    ;
+  }
+
+  html.sidebar-collapsed .main-shell {
+    padding-left: 4rem;
+  }
+
+  /* Hide theme button when collapsed (logout stays visible) */
+  html.sidebar-collapsed .js-theme {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .sidebar-shell,
+  .main-shell {
+    transition: none !important;
+  }
+
+  #page-root {
+    transition: none !important;
+  }
 }

@@ -1,166 +1,179 @@
 @php
-  // tiny helper to mark active nav items
-  function nav_active($patterns){ foreach((array)$patterns as $p) if(request()->routeIs($p)) return true; return false; }
+  // Tiny helper for active nav state
+  function nav_active($patterns) {
+      foreach ((array)$patterns as $p) if (request()->routeIs($p)) return true;
+      return false;
+  }
 @endphp
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'MiniCRM') }}</title>
 
-  <!-- Inter font -->
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="{{ asset('logo.svg') }}">
+  <link rel="alternate icon" type="image/png" href="{{ asset('logo.png') }}">
+  <meta name="theme-color" content="#040D12">
+
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Set theme early to avoid FOUC -->
+  <!-- Apply theme & sidebar state BEFORE first paint to prevent FOUC -->
   <script>
     (function () {
       try {
-        const ls = localStorage.getItem('theme');
-        const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
-        if (ls === 'dark' || (ls === null && prefersDark)) document.documentElement.classList.add('dark');
-      } catch {}
+        var doc = document.documentElement;
+
+        // Dark mode
+        var lsTheme = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (lsTheme === 'dark' || (!lsTheme && prefersDark)) {
+          doc.classList.add('dark');
+        } else {
+          doc.classList.remove('dark');
+        }
+
+        // Sidebar collapsed state
+        if (localStorage.getItem('sidebar') === 'collapsed') {
+          doc.classList.add('sidebar-collapsed');
+        }
+      } catch(e) {}
     })();
   </script>
 
-  <!-- Neutral initial background (light+dark) -->
+  <!-- Minimal background to avoid white flash -->
   <style>
-    html { background:#f8fafc; }
-    html.dark { background:#040D12; } /* forest-950 */
+    html{ background:#f8fafc; } html.dark{ background:#040D12; } [x-cloak]{ display:none!important; }
+
+    /* Collapsed sidebar layout rules */
+    /* Keep this tiny CSS here so it applies before Tailwind bundles render */
+    html.sidebar-collapsed .sidebar-shell{ width:4rem; }
+    html.sidebar-collapsed .main-shell{ padding-left:1rem; }         /* small gutter on mobile */
+    @media (min-width:1024px){ /* lg and up */
+      .main-shell{ padding-left:16rem; }                              /* 64 * 0.25rem = 16rem */
+      html.sidebar-collapsed .main-shell{ padding-left:4rem; }        /* collapsed width */
+    }
+
+    /* Hide text labels when collapsed; keep icons visible */
+    html.sidebar-collapsed .nav-label{ display:none; }
   </style>
 
   @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body class="min-h-dvh bg-white text-ink-900 dark:bg-forest-950 dark:text-white">
+<body class="min-h-dvh text-ink-900 dark:text-white bg-white dark:bg-forest-950">
 
-<div x-data="{ collapsed:false }" class="min-h-dvh">
-
-  <!-- ========= SIDEBAR (fixed) ========= -->
+  <!-- ===== Fixed Sidebar ===== -->
   <aside
-    class="fixed inset-y-0 left-0 z-40 border-r border-forest-200/60 dark:border-forest-800
+    class="fixed inset-y-0 left-0 z-40
+           w-64
+           border-r border-forest-200/60 dark:border-forest-800
            bg-forest-50/80 dark:bg-forest-900/80 backdrop-blur
-           hidden lg:flex flex-col transition-[width] duration-200 ease-out"
-    :class="collapsed ? 'w-16' : 'w-64'">
+           transition-[width] duration-300 will-change-[width]
+           sidebar-shell">
 
-    <!-- Brand / collapse toggle -->
-    <div class="h-16 flex items-center justify-between gap-2 px-3">
-      <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-        <span class="inline-flex h-8 w-8 rounded-lg bg-forest-500/20 items-center justify-center">💠</span>
-        <span class="font-semibold text-forest-900 dark:text-white" x-show="!collapsed">MiniCRM</span>
-      </a>
-      <button
-        type="button"
-        class="p-2 rounded-lg hover:bg-forest-600/30 transition"
-        @click="collapsed=!collapsed"
-        :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path :d="collapsed ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'"></path>
-        </svg>
-      </button>
+    <!-- Brand -->
+    <div class="h-16 px-4 flex items-center gap-3 border-b border-forest-200/60 dark:border-forest-800">
+      <img src="{{ asset('logo.svg') }}" alt="MiniCRM Logo" class="h-8 w-8 shrink-0">
+      <a href="{{ route('dashboard') }}" class="font-semibold text-forest-900 dark:text-white truncate nav-label">MiniCRM</a>
     </div>
 
-    <!-- NAV -->
-    <nav class="flex-1 p-2 space-y-1">
-      @php
-        $items = [
-          ['label'=>'Dashboard','icon'=>'M3 12h18','route'=>route('dashboard'),'active'=>nav_active('dashboard')],
-          ['label'=>'Deals','icon'=>'M3 7h18M3 12h18M3 17h12','route'=>route('deals.index'),'active'=>nav_active('deals.*')],
-          ['label'=>'Companies','icon'=>'M4 6h16v12H4z','route'=>route('companies.index'),'active'=>nav_active('companies.*')],
-          ['label'=>'Contacts','icon'=>'M12 12a5 5 0 100-10 5 5 0 000 10z M4 20a8 8 0 1116 0','route'=>route('contacts.index'),'active'=>nav_active('contacts.*')],
-        ];
-      @endphp
+    <!-- Main Nav -->
+    @php
+    $items = [
+        ['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => route('dashboard'), 'active' => nav_active('dashboard')],
+        ['label' => 'Deals',     'icon' => 'handshake',        'route' => route('deals.index'), 'active' => nav_active('deals.*')],
+        ['label' => 'Companies', 'icon' => 'building-2',       'route' => route('companies.index'), 'active' => nav_active('companies.*')],
+        ['label' => 'Contacts',  'icon' => 'users',            'route' => route('contacts.index'), 'active' => nav_active('contacts.*')],
+    ];
+@endphp
 
-      @foreach ($items as $it)
-        <a href="{{ $it['route'] }}"
-           class="group flex items-center gap-3 px-3 py-2 rounded-lg transition
-                  {{ $it['active']
-                      ? 'bg-forest-500/15 text-white border border-forest-500/30'
-                      : 'text-forest-700 dark:text-forest-300 hover:bg-forest-500/10' }}"
-           title="{{ $it['label'] }}">
-          <svg class="h-5 w-5 opacity-80 group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="{{ $it['icon'] }}"></path>
-          </svg>
-          <span class="text-sm font-medium" x-show="!collapsed" x-transition.opacity>{{ $it['label'] }}</span>
-        </a>
-      @endforeach
-    </nav>
+<nav class="p-3 space-y-1">
+  @foreach ($items as $it)
+    <a href="{{ $it['route'] }}"
+       class="group flex items-center gap-3 px-3 py-2 rounded-lg transition
+              {{ $it['active']
+                   ? 'bg-forest-500/15 text-white border border-forest-500/30'
+                   : 'text-forest-700 dark:text-forest-300 hover:bg-forest-500/10' }}">
+      <x-dynamic-component :component="'lucide-' . $it['icon']"
+                           class="h-5 w-5 opacity-80 group-hover:opacity-100"/>
+      <span class="text-sm font-medium truncate">{{ $it['label'] }}</span>
+    </a>
+  @endforeach
+</nav>
 
-    <!-- Footer actions -->
-    <div class="p-2 mt-auto border-t border-forest-200 dark:border-forest-800">
-      <div class="flex items-center justify-between">
-        <!-- Theme toggle (HIDDEN when collapsed) -->
-        <button
-          type="button"
-          class="px-3 py-2 rounded-lg hover:bg-forest-600/30 transition"
-          x-show="!collapsed"
-          @click="const d=document.documentElement; const on=d.classList.toggle('dark'); localStorage.theme=on?'dark':'light'">
-          <span class="sr-only">Toggle theme</span> 🌙
-        </button>
-
-        <!-- Logout (always visible; text only when expanded) -->
-        <form method="POST" action="{{ route('logout') }}" class="ml-auto">
-          @csrf
-          <button type="submit"
-                  class="flex items-center gap-2 px-3 py-2 rounded-lg border border-forest-300 dark:border-forest-700 hover:bg-forest-700/40">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-            <span x-show="!collapsed" x-transition.opacity>Logout</span>
-          </button>
-        </form>
-      </div>
+    <!-- Sidebar Footer (minimal; profile controls live in top-right menu) -->
+    <div class="mt-auto p-3 border-t border-forest-200/60 dark:border-forest-800">
+      <div class="nav-label text-xs text-forest-400 text-center opacity-70">MiniCRM</div>
     </div>
   </aside>
 
-  <!-- ========= TOPBAR (mobile + desktop) ========= -->
-  <header class="fixed top-0 right-0 left-0 h-16 z-30 border-b border-forest-200/60 dark:border-forest-800
-                  bg-forest-50/60 dark:bg-forest-900/60 backdrop-blur lg:left-auto"
-          :style="collapsed ? 'left:4rem' : 'left:16rem'">
-    <div class="h-full px-4 lg:px-8 flex items-center gap-3">
-      <!-- Mobile burger -->
-      <div class="lg:hidden">
-        <button class="p-2 rounded-lg hover:bg-forest-700/30" x-data @click="$dispatch('toggle-drawer')" aria-label="Open menu">☰</button>
+  <!-- ===== Topbar + Main content (pushed by sidebar) ===== -->
+  <div class="min-h-dvh main-shell transition-[padding] duration-300 will-change-[padding]">
+    <header class="h-16 border-b border-forest-200/60 dark:border-forest-800
+                   bg-white/70 dark:bg-forest-900/70 backdrop-blur sticky top-0 z-30">
+      <div class="h-full px-4 lg:px-8 flex items-center gap-3">
+
+        <!-- Collapse toggle (mobile + desktop) -->
+        <button class="p-2 rounded-lg hover:bg-forest-700/30"
+                onclick="
+                  (function(){
+                    const d=document.documentElement;
+                    const collapsed=d.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('sidebar', collapsed ? 'collapsed' : 'expanded');
+                  })()"
+                aria-label="Toggle sidebar">☰</button>
+
+        <!-- Search -->
+        <form action="#" class="hidden md:flex items-center gap-2 flex-1 max-w-xl">
+          <input type="search" placeholder="Search…" class="ui-input w-full">
+        </form>
+
+        <!-- Right actions: profile menu -->
+        <div class="ml-auto flex items-center gap-2">
+          <x-user-menu />
+        </div>
       </div>
+    </header>
 
-      <!-- Search -->
-      <form action="#" class="hidden md:flex items-center gap-2 flex-1 max-w-xl">
-        <input type="search" placeholder="Search…" class="ui-input w-full" />
-      </form>
+    <!-- Page content with soft fade -->
+    <main id="page-root" class="px-4 lg:px-8 py-6 opacity-0 transition-opacity duration-150">
+      @yield('content')
+    </main>
+  </div>
 
-      <!-- Right CTAs -->
-      <div class="ml-auto flex items-center gap-2">
-        <a href="{{ route('deals.index') }}" class="btn-outline hidden sm:inline-flex">New Deal</a>
-        <a href="{{ route('companies.index') }}" class="btn hidden sm:inline-flex">New Company</a>
-      </div>
-    </div>
-  </header>
+  <!-- Page fade + theme wiring -->
+  <script>
+    // Fade in content after paint
+    (function () {
+      const root = document.getElementById('page-root');
+      if (root) requestAnimationFrame(() => root.classList.remove('opacity-0'));
+    })();
 
-  <!-- ========= PAGE CONTENT ========= -->
-  <main id="page-root"
-        class="pt-20 px-4 lg:px-8 opacity-0 transition-opacity duration-150"
-        :style="collapsed ? 'padding-left:4rem' : 'padding-left:16rem'">
-    @yield('content')
-  </main>
+    // Fade-out on internal link navigation (keeps sidebar/header stable)
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const url = new URL(a.href, location.href);
+      const sameOrigin = url.origin === location.origin;
+      const newTab = e.metaKey || e.ctrlKey || a.target === '_blank';
+      if (sameOrigin && !newTab && !a.hasAttribute('data-no-fade')) {
+        const root = document.getElementById('page-root');
+        root && root.classList.add('opacity-0');
+      }
+    }, true);
 
-</div>
-
-<script>
-  // soft fade in
-  (function () {
-    const root = document.getElementById('page-root');
-    if (root) requestAnimationFrame(() => root.classList.remove('opacity-0'));
-  })();
-
-  // soft fade out before SPA-like navigation
-  document.addEventListener('click', function (e) {
-    const a = e.target.closest('a[href]');
-    if (!a) return;
-    const url = new URL(a.href, location.href);
-    const same = url.origin === location.origin;
-    const newTab = e.metaKey || e.ctrlKey || a.target === '_blank';
-    if (same && !newTab && !a.hasAttribute('data-no-fade')) {
-      document.getElementById('page-root')?.classList.add('opacity-0');
-    }
-  }, true);
-</script>
+  
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.js-theme');
+      if (!btn) return;
+      const d = document.documentElement;
+      const nowDark = d.classList.toggle('dark');
+      localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .node { fill: #20E3D8; stroke: #FFFFFF; stroke-width: 4; }
+    .line { stroke: #FFFFFF; stroke-width: 3; }
+  </style>
+
+  <!-- Mittelpunkt -->
+  <circle cx="256" cy="256" r="24" class="node"/>
+
+  <!-- Außenknoten -->
+  <circle cx="256" cy="96" r="14" class="node"/>
+  <circle cx="384" cy="144" r="14" class="node"/>
+  <circle cx="432" cy="256" r="14" class="node"/>
+  <circle cx="384" cy="368" r="14" class="node"/>
+  <circle cx="256" cy="416" r="14" class="node"/>
+  <circle cx="128" cy="368" r="14" class="node"/>
+  <circle cx="80"  cy="256" r="14" class="node"/>
+  <circle cx="128" cy="144" r="14" class="node"/>
+
+  <!-- Verbindungslinien -->
+  <line x1="256" y1="256" x2="256" y2="96" class="line"/>
+  <line x1="256" y1="256" x2="384" y2="144" class="line"/>
+  <line x1="256" y1="256" x2="432" y2="256" class="line"/>
+  <line x1="256" y1="256" x2="384" y2="368" class="line"/>
+  <line x1="256" y1="256" x2="256" y2="416" class="line"/>
+  <line x1="256" y1="256" x2="128" y2="368" class="line"/>
+  <line x1="256" y1="256" x2="80"  y2="256" class="line"/>
+  <line x1="256" y1="256" x2="128" y2="144" class="line"/>
+</svg>
