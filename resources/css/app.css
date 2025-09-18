@@ -11,56 +11,42 @@
    - Dark overrides auf .dark
 ========================================= */
 :root {
-  /* Surface / Background */
   --bg: #f8fafc;
-  /* page bg (light) */
+  /* light */
   --panel: #ffffff;
-  /* cards/panels (light) */
-  --panel-border: #e5e7eb;
-  /* slate-200 */
-  --panel-shadow: 0 10px 25px rgba(2, 8, 23, .10), 0 2px 8px rgba(2, 8, 23, .06);
-
-  /* Text */
-  --ink: #0f172a;
-  /* slate-900 */
-  --ink-muted: #64748b;
+  --primary: #5C8374;
+  --muted: #64748b;
   /* slate-500 */
-
-  /* Brand (Forest palette) */
-  --brand-500: #5C8374;
-  --brand-600: #4d6e62;
-  --brand-700: #3f5b51;
-
-  /* Accents for borders & focus in light mode */
-  --line: #cbd5e1;
-  /* slate-300 */
+  --ink: #0f172a;
+  /* text on white */
+  --border: #e2e8f0;
+  /* slate-200 */
 }
 
 html.dark {
   --bg: #040D12;
-  /* forest-950 */
+  /* dark */
   --panel: #183D3D;
-  /* forest-800-ish */
-  --panel-border: #0f2a2a;
-  /* subtle dark border */
-  --panel-shadow: 0 14px 30px rgba(0, 0, 0, .35), 0 2px 10px rgba(0, 0, 0, .25);
-
-  --ink: #e5e7eb;
-  /* slate-200 */
-  --ink-muted: rgba(255, 255, 255, .65);
-
-  --brand-500: #5C8374;
-  /* bleibt gleich */
-  --brand-600: #6b9a89;
-  --brand-700: #7fb2a0;
-
-  --line: #294a4a;
+  --primary: #5C8374;
+  --muted: #93B1A6;
+  --ink: #e2e8f0;
+  --border: #1f2937;
+  /* slate-800-ish */
 }
 
-/* First paint background to avoid white flash */
+/* apply */
 html,
 body {
   background: var(--bg);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+.muted {
+  color: var(--muted);
 }
 
 /* =========================================
