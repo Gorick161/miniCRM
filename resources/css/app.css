@@ -4,7 +4,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* Daily commit: minor style note */
 /* =========================================
    Design tokens (CSS variables)
    - Light defaults auf :root
